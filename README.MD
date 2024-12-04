@@ -1,1 +1,1 @@
-This library app is made by Pavel Pichugin for Techical Task
+This library app is made by Pavel Pichugin for Technical Task
