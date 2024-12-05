@@ -3,7 +3,7 @@ from typing import Any
 
 class JsonDBNode:
 
-    JsonDB:list[str] = {}
+    JsonDB = {}
     DB_file = None
 
     def __init__(self):
@@ -30,6 +30,10 @@ class JsonDBNode:
         self.JsonDB.append(record)
         self.save_json_file()
 
+    def delete_record(self, id):
+        """Удаление записи по ключу и значению."""
+        updated_data = [item for item in self.JsonDB if item.get(key) != value]
+        save_json_file(filename, updated_data)
 
 if __name__ == "__main__":
     JsonDBNode()
