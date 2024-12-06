@@ -20,9 +20,12 @@ class JsonDBNode:
     def load_books(self) -> list[Book]:
         return json.loads(self.JsonDB, Book)
     
-    def save_json_file(filename, data):
+    def save_json_file(self, filename, data):
         """Сохранение данных в файл."""
         with open(filename, 'w', encoding='utf-8') as file:
+            if self.DB_file == None:
+                self.DB_file = file
+
             json.dump(data, file, ensure_ascii=False, indent=4)  # Сохранение в формате JSON
     
     def add_record(self, record):
