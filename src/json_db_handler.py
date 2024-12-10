@@ -20,9 +20,9 @@ class JsonDBNode:
     def load_books(self) -> list[Book]:
         return json.loads(self.JsonDB, Book)
     
-    def save_json_file(self, filename, data):
+    def save_json_file(self, data):
         """Сохранение данных в файл."""
-        with open(filename, 'w', encoding='utf-8') as file:
+        with open(self.DB_file, 'w', encoding='utf-8') as file:
             if self.DB_file == None:
                 self.DB_file = file
 
@@ -35,8 +35,8 @@ class JsonDBNode:
 
     def delete_record(self, id):
         """Удаление записи по ключу и значению."""
-        updated_data = [item for item in self.JsonDB if item.get(key) != value]
-        save_json_file(filename, updated_data)
+        updated_data = [item for item in self.JsonDB if item.id != id]
+        save_json_file(updated_data)
 
 if __name__ == "__main__":
     JsonDBNode()
