@@ -1,5 +1,7 @@
 import json
+from types import FunctionType
 from typing import Any
+from library import Book
 
 class JsonDBNode:
 
@@ -12,74 +14,83 @@ class JsonDBNode:
         try:
             with open("lib_data.json", 'r', encoding='utf-8') as file:
                 self.JsonDB = json.load(file)  # Чтение и загрузка в Python-объект
+                self.DB_file = file
         except FileNotFoundError:
-            self.JsonDB = []  # Если файл отсутствует, присваиваем пустой список
+            self.JsonDB = {}  # Если файл отсутствует, присваиваем пустой список
         except json.JSONDecodeError:
             raise json.JSONDecodeError("Файл с данными JSON не исправен") # Если файл неисправен, пробрасываем ошибку наверх
 
-    def load_books(self) -> list[Book]:
-        return json.loads(self.JsonDB, Book)
+    # def load_books(self):
+    #     if not self.JsonDB and not self.DB_file:
+    #         self.JsonDB = json.load(self.DB_file)
+
+    #     return self.JsonDB
     
-    def save_json_file(self, data):
+    def save_json_file(self):
         """Сохранение данных в файл."""
-        with open(self.DB_file, 'w', encoding='utf-8') as file:
+        with open("lib_data.json", 'w', encoding='utf-8') as file:
             if self.DB_file == None:
                 self.DB_file = file
 
-            json.dump(data, file, ensure_ascii=False, indent=4)  # Сохранение в формате JSON
+            json.dump(self.JsonDB, file, ensure_ascii=False, indent=4)  # Сохранение в формате JSON
     
-    def add_record(self, record):
+    def add_record(self, record, record_id):
         """Добавление новой записи в JSON-ДБ"""
-        self.JsonDB.append(record)
+        self.JsonDB[record_id] = record # установка нумерации, добавление как последнего элемента
         self.save_json_file()
 
-    def delete_record(self, id):
-        """Удаление записи по ключу и значению."""
-        updated_data = [item for item in self.JsonDB if item.id != id]
-        save_json_file(updated_data)
+    def delete_record(self, lambda_func:FunctionType):
+        """Удаление записи по возвращаемому значению функции."""
+        updated_data = [item for item in self.JsonDB if not lambda_func(item)]
+        self.save_json_file(updated_data)
+
+
+
 
 if __name__ == "__main__":
-    JsonDBNode()
+    new_json_db = JsonDBNode()
 
-import json
+    new_json_db.add_record("abc")
 
-def load_json_file(filename):
-    """Загрузка данных из файла."""
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            return json.load(file)  # Чтение и преобразование в Python-объект
-    except FileNotFoundError:
-        return []  # Если файл отсутствует, возвращаем пустой список
-    except json.JSONDecodeError:
-        print("Ошибка декодирования JSON.")
-        return []
+# import json
 
-def save_json_file(filename, data):
-    """Сохранение данных в файл."""
-    with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)  # Сохранение в формате JSON
+# def load_json_file(filename):
+#     """Загрузка данных из файла."""
+#     try:
+#         with open(filename, 'r', encoding='utf-8') as file:
+#             return json.load(file)  # Чтение и преобразование в Python-объект
+#     except FileNotFoundError:
+#         return []  # Если файл отсутствует, возвращаем пустой список
+#     except json.JSONDecodeError:
+#         print("Ошибка декодирования JSON.")
+#         return []
 
-def add_record(filename, record):
-    """Добавление новой записи в JSON-файл."""
-    data = load_json_file(filename)
-    data.append(record)
-    save_json_file(filename, data)
+# def save_json_file(filename, data):
+#     """Сохранение данных в файл."""
+#     with open(filename, 'w', encoding='utf-8') as file:
+#         json.dump(data, file, ensure_ascii=False, indent=4)  # Сохранение в формате JSON
 
-def delete_record(filename, key, value):
-    """Удаление записи по ключу и значению."""
-    data = load_json_file(filename)
-    updated_data = [item for item in data if item.get(key) != value]
-    save_json_file(filename, updated_data)
+# def add_record(filename, record):
+#     """Добавление новой записи в JSON-файл."""
+#     data = load_json_file(filename)
+#     data.append(record)
+#     save_json_file(filename, data)
 
-# Пример использования
-file_name = 'data.json'
+# def delete_record(filename, key, value):
+#     """Удаление записи по ключу и значению."""
+#     data = load_json_file(filename)
+#     updated_data = [item for item in data if item.get(key) != value]
+#     save_json_file(filename, updated_data)
 
-# Добавление записи
-new_record = {"id": 1, "name": "John Doe", "age": 30}
-add_record(file_name, new_record)
+# # Пример использования
+# file_name = 'data.json'
 
-# Удаление записи по ключу "id" с определённым значением
-delete_record(file_name, "id", 1)
+# # Добавление записи
+# new_record = {"id": 1, "name": "John Doe", "age": 30}
+# add_record(file_name, new_record)
 
-# Проверка содержимого файла
-print(load_json_file(file_name))
+# # Удаление записи по ключу "id" с определённым значением
+# delete_record(file_name, "id", 1)
+
+# # Проверка содержимого файла
+# print(load_json_file(file_name))
